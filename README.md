@@ -51,44 +51,20 @@ Thank you to everyone who provided feedback on adding new languages and testing 
 
 <img src="https://techniccontroller.com/wp-content/uploads/filemanager1-1.png" height="300px" /> <img src="https://techniccontroller.com/wp-content/uploads/filemanager2-1.png" height="300px" /> <img src="https://techniccontroller.com/wp-content/uploads/filemanager3-1.png" height="300px" />
 
-## Install needed Libraries
-
-Please download all these libraries as ZIP from GitHub, and extract them in the *libraries* folder of your Sketchbook location (see **File -> Preferences**):
-
-- https://github.com/adafruit/Adafruit-GFX-Library
-- https://github.com/adafruit/Adafruit_NeoMatrix
-- https://github.com/adafruit/Adafruit_NeoPixel
-- https://github.com/tzapu/WiFiManager
-- https://github.com/adafruit/Adafruit_BusIO
-
-folder structure should look like this:
-
-```
-MySketchbookLocation 
-│
-└───libraries
-│   └───Adafruit-GFX-Library
-│   └───Adafruit_NeoMatrix
-│   └───Adafruit_NeoPixel
-│   └───WiFiManager
-│   └───Adafruit_BusIO
-│   
-└───wordclock_esp8266
-    │   wordclock_esp8266.ino
-    │   (...)
-    |
-    └───data
-        │   index.html
-        |   (...)
-        |
-        └───icons 
-```
-
-
 ## Upload program to ESP8266 with Arduino IDE
 
-#### STEP1: Installation of Arduino IDE
+#### STEP0: Installation of Arduino IDE
 First, the latest version of the Arduino IDE needs to be downloaded and installed from [here](https://www.arduino.cc/en/software).
+
+#### STEP1: Installation of the needed Libraries
+
+In order to compile, this program needs some libraries.
+Using the Library Manager in Arduino IDE you'll have to search and install
+- Adafruit GFX Library
+- Adafruit NeoMatrix
+- Adafruit NeoPixel
+- WiFiManager
+- Adafruit BusIO
 
 #### STEP2: Installation of ESP8266 Arduino Core
 To program the ESP8266 with the Arduino IDE, you need to install the board information first in Arduino IDE. To do that follow the following instructions:
