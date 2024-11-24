@@ -26,6 +26,8 @@
 #include <Adafruit_GFX.h>               // https://github.com/adafruit/Adafruit-GFX-Library
 #include <Adafruit_NeoMatrix.h>         // https://github.com/adafruit/Adafruit_NeoMatrix
 #include <Adafruit_NeoPixel.h>          // NeoPixel library used to run the NeoPixel LEDs: https://github.com/adafruit/Adafruit_NeoPixel
+#include <Adafruit_SH110X.h>       	    // library used to run a small display
+#include <Wire.h>			// Handle I2C traffic to display
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
@@ -34,6 +36,7 @@
 #include <DNSServer.h>
 #include <WiFiManager.h>                //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <EEPROM.h>                     //from ESP8266 Arduino Core (automatically installed when ESP8266 was installed via Boardmanager)
+#include <Pushbutton.h>
 
 // own libraries
 #include "udplogger.h"
@@ -59,6 +62,11 @@
 #define ADR_MC_BLUE 24
 #define ADR_STATE 26
 
+#define DISPLAY_WIDTH 128
+#define DISPLAY_HEIGHT 64
+#define DISPLAY_I2C_ADDRESS 0x3C
+#define OLED_RESET -1 	    // not needed for I2C
+#define BTN_SHOW_IP 14
 
 #define NEOPIXELPIN D4       // pin to which the NeoPixels are attached
 #define NUMPIXELS 121       // number of pixels attached to Attiny85
@@ -148,6 +156,11 @@ DNSServer DnsServer;
 
 // Wifi server. keep around to support resetting.
 WiFiManager wifiManager;
+
+// OLED Display using I2C (Pin 4, 5)
+Adafruit_SH1106G display(DISPLAY_WIDTH, DISPLAY_HEIGHT, &Wire, OLED_RESET);
+
+Pushbutton button_show_ip(BTN_SHOW_IP);
 
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
@@ -252,11 +265,31 @@ void setup() {
   // set custom ip for portal
   //wifiManager.setAPStaticIPConfig(IPAdress_AccessPoint, Gateway_AccessPoint, Subnetmask_AccessPoint);
 
+  // Initialize Display
+  if (display.begin(DISPLAY_I2C_ADDRESS, true)) {
+      Serial.println("Display allocated successfully");
+  } else {
+      Serial.println("Display allocation failed");
+  }
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(0, 0);
+  display.println("Please connect to the wifi wordclockAP network and setup you wifi.");
+  display.display();
+
   // fetches ssid and pass from eeprom and tries to connect
   // if it does not connect it starts an access point with the specified name
   // here "wordclockAP"
   // and goes into a blocking loop awaiting configuration
   wifiManager.autoConnect(AP_SSID);
+
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Wifi setup successful. You can connect to the following address in you browser.");
+  display.print(WiFi.localIP());
+  display.display();
 
   // if you get here you have connected to the WiFi
   Serial.println("Connected.");
@@ -268,7 +301,6 @@ void setup() {
     ledmatrix.setMinIndicator(15, 0);
     ledmatrix.drawOnMatrixInstant();
   }
-
 
 
   /** (alternative) Use directly STA/AP Mode of ESP8266   **/
@@ -426,7 +458,15 @@ void setup() {
 void loop() {
   // handle OTA
   handleOTA();
-  
+
+  // check for Button press
+  if(button_show_ip.isPressed()) {
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.println("Button worked.");
+      display.display();
+  }
+
   // handle Webserver
   server.handleClient();
 
