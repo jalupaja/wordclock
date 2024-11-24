@@ -1,24 +1,24 @@
 /**
  * Wordclock 2.0 - Wordclock with ESP8266 and NTP time update
- * 
+ *
  * created by techniccontroller 04.12.2021
- * 
+ *
  * components:
  * - ESP8266
  * - Neopixelstrip
- * 
+ *
  * Board settings:
  * - Board: NodeMCU 1.0 (ESP-12E Module)
  * - Flash Size: 4MB (FS:2MB OTA:~1019KB)
  * - Upload Speed: 115200
- *  
- * 
+ *
+ *
  * with code parts from:
  * - Adafruit NeoPixel strandtest.ino, https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino
  * - Esp8266 und Esp32 webserver https://fipsok.de/
  * - https://github.com/pmerlin/PMR-LED-Table/blob/master/tetrisGame.ino
- * - https://randomnerdtutorials.com/wifimanager-with-esp8266-autoconnect-custom-parameter-and-manage-your-ssid-and-password/ 
- * 
+ * - https://randomnerdtutorials.com/wifimanager-with-esp8266-autoconnect-custom-parameter-and-manage-your-ssid-and-password/
+ *
  */
 
 #include "secrets.h"                    // rename the file example_secrets.h to secrets.h after cloning the project. More information in README.md
@@ -30,7 +30,7 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <ESP8266WebServer.h>
-#include "Base64.h"                    // copied from https://github.com/Xander-Electronics/Base64 
+#include "Base64.h"                    // copied from https://github.com/Xander-Electronics/Base64
 #include <DNSServer.h>
 #include <WiFiManager.h>                //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <EEPROM.h>                     //from ESP8266 Arduino Core (automatically installed when ESP8266 was installed via Boardmanager)
@@ -104,16 +104,16 @@ enum ClockState {st_clock, st_diclock, st_spiral, st_tetris, st_snake, st_pingpo
 const String stateNames[] = {"Clock", "DiClock", "Sprial", "Tetris", "Snake", "PingPong"};
 // PERIODS for each state (different for stateAutoChange or Manual mode)
 const uint16_t PERIODS[2][NUM_STATES] = { { PERIOD_TIMEVISUUPDATE, // stateAutoChange = 0
-                                            PERIOD_TIMEVISUUPDATE, 
+                                            PERIOD_TIMEVISUUPDATE,
                                             PERIOD_ANIMATION,
-                                            PERIOD_TETRIS, 
-                                            PERIOD_SNAKE,  
+                                            PERIOD_TETRIS,
+                                            PERIOD_SNAKE,
                                             PERIOD_PONG},
                                           { PERIOD_TIMEVISUUPDATE, // stateAutoChange = 1
-                                            PERIOD_TIMEVISUUPDATE, 
+                                            PERIOD_TIMEVISUUPDATE,
                                             PERIOD_ANIMATION,
-                                            PERIOD_ANIMATION, 
-                                            PERIOD_ANIMATION,  
+                                            PERIOD_ANIMATION,
+                                            PERIOD_ANIMATION,
                                             PERIOD_PONG}};
 
 // ports
@@ -158,14 +158,14 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(WIDTH, HEIGHT, NEOPIXELPIN,
   NEO_GRB            + NEO_KHZ800);
 
 
-// seven predefined colors24bit (green, red, yellow, purple, orange, lightgreen, blue) 
+// seven predefined colors24bit (green, red, yellow, purple, orange, lightgreen, blue)
 const uint32_t colors24bit[NUM_COLORS] = {
   LEDMatrix::Color24bit(0, 255, 0),
   LEDMatrix::Color24bit(255, 0, 0),
   LEDMatrix::Color24bit(200, 200, 0),
   LEDMatrix::Color24bit(255, 0, 200),
-  LEDMatrix::Color24bit(255, 128, 0), 
-  LEDMatrix::Color24bit(0, 128, 0), 
+  LEDMatrix::Color24bit(255, 128, 0),
+  LEDMatrix::Color24bit(0, 128, 0),
   LEDMatrix::Color24bit(0, 0, 255) };
 
 uint8_t brightness = 40;            // current brightness of leds
@@ -179,7 +179,7 @@ long lastStateChange = millis();    // time of last state change
 long lastNTPUpdate = millis() - (PERIOD_NTPUPDATE-3000);  // time of last NTP update
 long lastAnimationStep = millis();  // time of last Matrix update
 long lastNightmodeCheck = millis()  - (PERIOD_NIGHTMODECHECK-3000); // time of last nightmode check
-long buttonPressStart = 0;          // time of push button press start 
+long buttonPressStart = 0;          // time of push button press start
 
 // Create necessary global objects
 UDPLogger logger;
@@ -261,7 +261,7 @@ void setup() {
   // if you get here you have connected to the WiFi
   Serial.println("Connected.");
   Serial.println("IP address: ");
-  Serial.println(WiFi.localIP()); 
+  Serial.println(WiFi.localIP());
 
   if(!ESP.getResetReason().equals("Software/System restart")){
     // Turn off minutes leds
@@ -269,15 +269,15 @@ void setup() {
     ledmatrix.drawOnMatrixInstant();
   }
 
-   
-  
+
+
   /** (alternative) Use directly STA/AP Mode of ESP8266   **/
-  
-  /* 
+
+  /*
   // We start by connecting to a WiFi network
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
-  
+
   // We start by connecting to a WiFi network
   WiFi.mode(WIFI_STA);
   //Set new hostname
@@ -303,10 +303,10 @@ void setup() {
 
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
-    Serial.println(WiFi.localIP()); 
+    Serial.println(WiFi.localIP());
     WiFi.setAutoReconnect(true);
     WiFi.persistent(true);
-  
+
   } else {
     // no wifi found -> open access point
     WiFi.mode(WIFI_AP);
@@ -333,7 +333,7 @@ void setup() {
   server.on("/data", handleDataRequest); // process datarequests
   server.on("/leddirect", HTTP_POST, handleLEDDirect); // Call the 'handleLEDDirect' function when a POST request is made to URI "/leddirect"
   server.begin();
-  
+
   // create UDP Logger to send logging messages via UDP multicast
   logger = UDPLogger(WiFi.localIP(), logMulticastIP, logMulticastPort);
   logger.setName("Wordclock 2.0");
@@ -385,10 +385,10 @@ void setup() {
         matrix.fillScreen(0);
         matrix.drawPixel(c, r, LEDMatrix::color24to16bit(colors24bit[2]));
         matrix.show();
-        delay(10); 
+        delay(10);
         }
     }
-    
+
     // clear Matrix
     matrix.fillScreen(0);
     matrix.show();
@@ -414,8 +414,8 @@ void setup() {
     waitForTimeAfterReboot = true;
   }
 
-  
-  
+
+
 }
 
 
@@ -445,7 +445,7 @@ void loop() {
 
   // handle state behaviours (trigger loopCycles of different states depending on current state)
   if(!nightMode && (millis() - lastStep > PERIODS[stateAutoChange][currentState]) && (millis() - lastLEDdirect > TIMEOUT_LEDDIRECT)){
-    updateStateBehavior(currentState);    
+    updateStateBehavior(currentState);
     lastStep = millis();
   }
 
@@ -462,7 +462,7 @@ void loop() {
   if(stateAutoChange && (millis() - lastStateChange > PERIOD_STATECHANGE) && !nightMode){
     // increment state variable and trigger state change
     stateChange((currentState + 1) % NUM_STATES, false);
-    
+
     // save last automatic state change
     lastStateChange = millis();
   }
@@ -516,7 +516,7 @@ void loop() {
         delay(100);
         ESP.restart();
     }
-    
+
   }
 
   // check if nightmode need to be activated
@@ -524,7 +524,7 @@ void loop() {
     checkNightmode();
     lastNightmodeCheck = millis();
   }
- 
+
 }
 
 
@@ -610,13 +610,13 @@ void updateStateBehavior(uint8_t state){
 
 /**
  * @brief Check if nightmode should be activated
- * 
+ *
  */
 void checkNightmode(){
   logger.logString("Check nightmode");
   int hours = ntp.getHours24();
   int minutes = ntp.getMinutes();
-  
+
   nightMode = false; // Initial assumption
 
   // Convert all times to minutes for easier comparison
@@ -640,8 +640,8 @@ void checkNightmode(){
 
 /**
  * @brief call entry action of given state
- * 
- * @param state 
+ *
+ * @param state
  */
 void entryAction(uint8_t state){
   filterFactor = 0.5;
@@ -649,7 +649,7 @@ void entryAction(uint8_t state){
     case st_spiral:
       // Init spiral with normal drawing mode
       sprialDir = 0;
-      spiral(true, sprialDir, WIDTH-6);
+      spiral(true, sprialDir, WIDTH);
       break;
     case st_tetris:
       filterFactor = 1.0; // no smoothing
@@ -683,7 +683,7 @@ void entryAction(uint8_t state){
 
 /**
  * @brief execute a state change to given newState
- * 
+ *
  * @param newState the new state to be changed to
  * @param persistant if true, the state will be saved to EEPROM
  */
@@ -706,11 +706,11 @@ void stateChange(uint8_t newState, bool persistant){
 
 /**
  * @brief Handler for POST requests to /leddirect.
- * 
- * Allows the control of all LEDs from external source. 
+ *
+ * Allows the control of all LEDs from external source.
  * It will overwrite the normal program for 5 seconds.
  * A 11x11 picture can be sent as base64 encoded string to be displayed on matrix.
- * 
+ *
  */
 void handleLEDDirect() {
   if (server.method() != HTTP_POST) {
@@ -760,7 +760,7 @@ void handleLEDDirect() {
 
 /**
  * @brief Check button commands
- * 
+ *
  */
 void handleButton(){
   static bool lastButtonState = false;
@@ -781,7 +781,7 @@ void handleButton(){
       setNightmode(true);
     }
     else if((millis() - buttonPressStart) > SHORTPRESS){
-      // shortpress -> state change 
+      // shortpress -> state change
       logger.logString("Button press ended - shortpress");
 
       if(nightMode){
@@ -789,7 +789,7 @@ void handleButton(){
       }else{
         stateChange((currentState + 1) % NUM_STATES, true);
       }
-      
+
     }
   }
   lastButtonState = buttonPressed;
@@ -797,7 +797,7 @@ void handleButton(){
 
 /**
  * @brief Set main color
- * 
+ *
  */
 
 void setMainColor(uint8_t red, uint8_t green, uint8_t blue){
@@ -810,7 +810,7 @@ void setMainColor(uint8_t red, uint8_t green, uint8_t blue){
 
 /**
  * @brief Load maincolor from EEPROM
- * 
+ *
 */
 
 void loadMainColor(){
@@ -826,7 +826,7 @@ void loadMainColor(){
 
 /**
  * @brief Handler for handling commands sent to "/cmd" url
- * 
+ *
  */
 void handleCommand() {
   // receive command and handle accordingly
@@ -834,7 +834,7 @@ void handleCommand() {
     String log_str = "Command received: " + server.argName(i) + " " + server.arg(i);
     logger.logString(log_str);
   }
-  
+
   if (server.argName(0) == "led") // the parameter which was sent to this server is led color
   {
     String colorstr = server.arg(0) + "-";
@@ -870,7 +870,7 @@ void handleCommand() {
     }
     else if(modestr == "pingpong"){
       stateChange(st_pingpong, true);
-    } 
+    }
   }
   else if(server.argName(0) == "nightmode"){
     String modestr = server.arg(0);
@@ -910,10 +910,10 @@ void handleCommand() {
         matrix.fillScreen(0);
         matrix.drawPixel(c, r, LEDMatrix::color24to16bit(colors24bit[2]));
         matrix.show();
-        delay(10); 
+        delay(10);
         }
     }
-    
+
     // clear Matrix
     matrix.fillScreen(0);
     matrix.show();
@@ -990,11 +990,11 @@ void handleCommand() {
 
 /**
  * @brief Splits a string at given character and return specified element
- * 
+ *
  * @param s string to split
  * @param parser separating character
  * @param index index of the element to return
- * @return String 
+ * @return String
  */
 String split(String s, char parser, int index) {
   String rs="";
@@ -1013,7 +1013,7 @@ String split(String s, char parser, int index) {
 
 /**
  * @brief Handler for GET requests
- * 
+ *
  */
 void handleDataRequest() {
   // receive data request and handle accordingly
@@ -1022,7 +1022,7 @@ void handleDataRequest() {
     Serial.print(F(": "));
     Serial.println(server.arg(i));
   }
-  
+
   if (server.argName(0) == "key") // the parameter which was sent to this server is led color
   {
     String message = "{";
@@ -1049,7 +1049,7 @@ void handleDataRequest() {
 
 /**
  * @brief Set the nightmode state
- * 
+ *
  * @param on true -> nightmode on
  */
 void setNightmode(bool on){
@@ -1061,7 +1061,7 @@ void setNightmode(bool on){
 
 /**
  * @brief Write value to EEPROM
- * 
+ *
  * @param address address to write the value
  * @param value value to write
  */
@@ -1072,7 +1072,7 @@ void writeIntEEPROM(int address, int value){
 
 /**
  * @brief Read value from EEPROM
- * 
+ *
  * @param address address
  * @return int value
  */
@@ -1084,9 +1084,9 @@ int readIntEEPROM(int address){
 
 /**
  * @brief Convert Integer to String with leading zero
- * 
- * @param value 
- * @return String 
+ *
+ * @param value
+ * @return String
  */
 String leadingZero2Digit(int value){
   String msg = "";

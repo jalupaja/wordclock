@@ -4,7 +4,7 @@ const String clockStringGerman =  "ESKISTLFUNFZEHNZWANZIGDREIVIERTELTGNACHVORJMH
 
 /**
  * @brief control the four minute indicator LEDs
- * 
+ *
  * @param minutes minutes to be displayed [0 ... 59]
  * @param color 24bit color value
  */
@@ -12,10 +12,10 @@ void drawMinuteIndicator(uint8_t minutes, uint32_t color){
   //separate LEDs for minutes in an additional row
   {
   switch (minutes%5)
-    { 
+    {
       case 0:
         break;
-          
+
       case 1:
         ledmatrix.setMinIndicator(0b1000, color);
         break;
@@ -37,7 +37,7 @@ void drawMinuteIndicator(uint8_t minutes, uint32_t color){
 
 /**
  * @brief Draw the given sentence to the word clock
- * 
+ *
  * @param message sentence to be displayed
  * @param color 24bit color value
  * @return int: 0 if successful, -1 if sentence not possible to display
@@ -58,11 +58,11 @@ int showStringOnClock(String message, uint32_t color){
       // extract next word from message
       word = split(message, ' ', index);
       index++;
-      
+
       if(word.length() > 0){
         // find word in clock string
         positionOfWord = clockStringGerman.indexOf(word, lastLetterClock);
-        
+
         if(positionOfWord >= 0){
           // word found on clock -> enable leds in targetgrid
           for(unsigned int i = 0; i < word.length(); i++){
@@ -89,17 +89,16 @@ int showStringOnClock(String message, uint32_t color){
 
 /**
  * @brief Converts the given time as sentence (String)
- * 
+ *
  * @param hours hours of the time value
  * @param minutes minutes of the time value
  * @return String time as sentence
  */
 String timeToString(uint8_t hours,uint8_t minutes){
-  
+
   //ES IST
   String message = "ES IST ";
 
-  
   //show minutes
   if(minutes >= 5 && minutes < 10)
   {
@@ -115,7 +114,7 @@ String timeToString(uint8_t hours,uint8_t minutes){
   }
   else if(minutes >= 20 && minutes < 25)
   {
-    message += "ZEHN VOR HALB "; 
+    message += "ZEHN VOR HALB ";
   }
   else if(minutes >= 25 && minutes < 30)
   {
