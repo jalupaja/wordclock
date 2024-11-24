@@ -557,18 +557,18 @@ void updateStateBehavior(uint8_t state){
     // state spiral
     case st_spiral:
       {
-        int res = spiral(false, sprialDir, WIDTH-6);
+        int res = spiral(false, sprialDir, WIDTH);
         if(res && sprialDir == 0){
           // change spiral direction to closing (draw empty leds)
           sprialDir = 1;
           // init spiral with new spiral direction
-          spiral(true, sprialDir, WIDTH-6);
-          
+          spiral(true, sprialDir, WIDTH);
+
         }else if(res && sprialDir == 1){
           // reset spiral direction to normal drawing leds
           sprialDir = 0;
           // init spiral with new spiral direction
-          spiral(true, sprialDir, WIDTH-6);
+          spiral(true, sprialDir, WIDTH);
         }
       }
       break;
