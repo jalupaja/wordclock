@@ -60,8 +60,8 @@
 #define ADR_STATE 26
 
 
-#define NEOPIXELPIN 5       // pin to which the NeoPixels are attached
-#define NUMPIXELS 125       // number of pixels attached to Attiny85
+#define NEOPIXELPIN D4       // pin to which the NeoPixels are attached
+#define NUMPIXELS 121       // number of pixels attached to Attiny85
 #define BUTTONPIN 14        // pin to which the button is attached
 #define LEFT 1
 #define RIGHT 2
@@ -152,8 +152,8 @@ WiFiManager wifiManager;
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(WIDTH, HEIGHT+1, NEOPIXELPIN,
-  NEO_MATRIX_TOP + NEO_MATRIX_LEFT +
+Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(WIDTH, HEIGHT, NEOPIXELPIN,
+  NEO_MATRIX_BOTTOM + NEO_MATRIX_LEFT +
   NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG,
   NEO_GRB            + NEO_KHZ800);
 
