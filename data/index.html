@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
 	
+	document.onkeydown = function(e) {
+	    switch (e.keyCode) {
+		case 37:
+		    sendCommand('./cmd?tetris=left')
+		    sendCommand('./cmd?snake=left')
+		    break;
+		case 38:
+		    sendCommand('./cmd?tetris=up')
+		    sendCommand('./cmd?snake=up')
+		    sendCommand('./cmd?pong=up')
+		    break;
+		case 39:
+		    sendCommand('./cmd?tetris=right')
+		    sendCommand('./cmd?snake=right')
+		    break;
+		case 40:
+		    sendCommand('./cmd?tetris=down')
+		    sendCommand('./cmd?snake=down')
+		    sendCommand('./cmd?pong=down')
+		    break;
+	    }
+	};
+
 	body{
 		background-color: #222222;
 		font-family: -apple-system, 
