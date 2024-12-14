@@ -4,30 +4,6 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-	
-	document.onkeydown = function(e) {
-	    switch (e.keyCode) {
-		case 37:
-		    sendCommand('./cmd?tetris=left')
-		    sendCommand('./cmd?snake=left')
-		    break;
-		case 38:
-		    sendCommand('./cmd?tetris=up')
-		    sendCommand('./cmd?snake=up')
-		    sendCommand('./cmd?pong=up')
-		    break;
-		case 39:
-		    sendCommand('./cmd?tetris=right')
-		    sendCommand('./cmd?snake=right')
-		    break;
-		case 40:
-		    sendCommand('./cmd?tetris=down')
-		    sendCommand('./cmd?snake=down')
-		    sendCommand('./cmd?pong=down')
-		    break;
-	    }
-	};
-
 	body{
 		background-color: #222222;
 		font-family: -apple-system, 
@@ -456,6 +432,31 @@
 			var xmlhttp = new XMLHttpRequest();
 			var url = "./data?key=mode";
 			var myVar = null;
+            var currentMode = null;
+            const MODES = {3: "tetris", 4: "snake", 5: "pong"};
+
+            document.onkeydown = function(e) {
+                if (!MODES[currentMode]) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                switch (e.key) {
+	            case "ArrowLeft":
+                    sendCommand('./cmd?' + MODES[currentMode] + '=left')
+	                break;
+	            case "ArrowUp":
+	                sendCommand('./cmd?' + MODES[currentMode] + '=up')
+	                break;
+	            case "ArrowRight":
+	                sendCommand('./cmd?' + MODES[currentMode] + '=right')
+	                break;
+	            case "ArrowDown":
+	                sendCommand('./cmd?' + MODES[currentMode] + '=down')
+	                break;
+                }
+            };
 
 			xmlhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
@@ -522,6 +523,7 @@
 					element.classList.remove("active");
 				}
 				element.classList.add("active");
+                currentMode = value;
 
 				updateDisplay(value);
 			}
