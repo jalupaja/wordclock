@@ -114,7 +114,7 @@ String timeToString(uint8_t hours,uint8_t minutes){
   }
   else if(minutes >= 20 && minutes < 25)
   {
-    message += "ZEHN VOR HALB ";
+    message += "ZWANZIG NACH ";
   }
   else if(minutes >= 25 && minutes < 30)
   {
@@ -130,7 +130,7 @@ String timeToString(uint8_t hours,uint8_t minutes){
   }
   else if(minutes >= 40 && minutes < 45)
   {
-    message += "ZEHN NACH HALB ";
+    message += "ZWANZIG VOR ";
   }
   else if(minutes >= 45 && minutes < 50)
   {
@@ -150,7 +150,7 @@ String timeToString(uint8_t hours,uint8_t minutes){
   {
       hours -= 12;
   }
-  if(minutes >= 20)
+  if(minutes >= 25)
   {
       hours++;
   }
@@ -208,6 +208,24 @@ String timeToString(uint8_t hours,uint8_t minutes){
   {
     message += "UHR ";
   }
+
+  if(minutes % 5 == 1){
+    message += ". ";
+  } 
+  else if(minutes % 5 == 2){
+    message += ". . ";
+  }
+  else if(minutes % 5 == 3){
+    message += ". . . ";
+  }
+  else if(minutes % 5 == 4){
+    message += ". . . . ";
+  }
+
+  if(hours == 3 && minutes == 14){
+    message = "ES IST PI ";
+  }
+
 
   logger.logString("time as String: " + String(message));
 
