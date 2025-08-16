@@ -110,7 +110,8 @@ String timeToString(uint8_t hours,uint8_t minutes){
   }
   else if(minutes >= 15 && minutes < 20)
   {
-    message += "VIERTEL NACH ";
+    message += "VIERTEL ";
+    hours++;
   }
   else if(minutes >= 20 && minutes < 25)
   {
@@ -134,7 +135,7 @@ String timeToString(uint8_t hours,uint8_t minutes){
   }
   else if(minutes >= 45 && minutes < 50)
   {
-    message += "VIERTEL VOR ";
+    message += "DREIVIERTELT ";
   }
   else if(minutes >= 50 && minutes < 55)
   {
@@ -211,7 +212,7 @@ String timeToString(uint8_t hours,uint8_t minutes){
 
   if(minutes % 5 == 1){
     message += ". ";
-  } 
+  }
   else if(minutes % 5 == 2){
     message += ". . ";
   }
